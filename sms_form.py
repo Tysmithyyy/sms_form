@@ -3,6 +3,8 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import re
 
+st.set_page_config(page_title="Melinda Smith Photography Text Opt-in", menu_items=None)
+
 st.title('Sign up to be on the texting list for Melinda Smith Photography!')
 
 credentials = {
