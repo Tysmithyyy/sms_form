@@ -23,29 +23,53 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials, scope)
 client = gspread.authorize(creds)
 
 success_message = ""
+error_message = ""
 
 container = st.empty()
 
 with container.container():
-    name_value = st.text_input("Name")
+    first_name_value = st.text_input("First Name")
+    first_name_value =first_name_value.title()
 
-    phone_value = st.text_input("Phone Number", max_chars=10)
+    last_name_value = st.text_input("Last Name")
+    last_name_value =last_name_value.title()
 
-    contact = [name_value, phone_value]
+    help_msg = "Phone number should consist of 10 digits and no special characters such as (,),-"
+
+    phone_value = st.text_input("Phone Number", max_chars=10, help=help_msg)
+
+    
+
+    contact = [first_name_value, last_name_value, phone_value]
 
     if st.button("Submit"):
-        # Open the Google Sheet by title
-        sheet = client.open("contacts sheet")
+        if first_name_value and phone_value and last_name_value and len(phone_value)>9:
+            # Open the Google Sheet by title
+            sheet = client.open("contacts sheet")
 
-        # Select the worksheet where you want to add the row
-        worksheet = sheet.get_worksheet(0)  # Use the index (0-based) or title of the worksheet
+            # Select the worksheet where you want to add the row
+            worksheet = sheet.get_worksheet(0)  # Use the index (0-based) or title of the worksheet
 
-        # Append the row to the worksheet
-        worksheet.append_row(contact)
-        
-        container.empty()
+            # Append the row to the worksheet
+            worksheet.append_row(contact)
+            
+            container.empty()
 
-        success_message = "Thanks for signing up! Your number has been saved."
+            success_message = "Thanks for signing up! Your number has been saved."
+        else:
+            if phone_value.isnumeric() == False or len(phone_value)<10:
+                missing_value = "10 digit phone number"
+                phone_value = ""
+            elif not first_name_value:
+                missing_value = "first name"
+            elif not last_name_value:
+                missing_value = "last name"
+            else:
+                missing_value = "phone number"
+            error_message = f"Please enter a {missing_value} to submit."
 
 if success_message:     
     st.success(success_message)
+
+if error_message:
+    st.error(error_message)
